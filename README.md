@@ -7,7 +7,7 @@
 
 > Cliente de terminal rápido, moderno y sin publicidad para consultar, buscar y monitorizar ofertas de [Chollometro](https://www.chollometro.com).
 
-Inspirado en la filosofía y experiencia de usuario de herramientas como `wallapop-cli`.
+Inspirado en la filosofía y experiencia de usuario de [wallapop-cli](https://wallapop.micr.dev) (de Microck).
 
 ---
 
@@ -250,6 +250,12 @@ chollometro-cli/
 ├── tsconfig.json             # Configuración de TypeScript
 └── tsup.config.ts            # Bundler ESM ultra-rápido
 ```
+
+---
+
+## 🤝 Reconocimientos
+
+Este proyecto toma como referente directo la arquitectura, la filosofía Unix de cero fricción y el formato ultra-compacto `toon` de **[wallapop-cli](https://wallapop.micr.dev)**, desarrollado por **Microck**, adaptando estos principios al ecosistema de ofertas y la infraestructura GraphQL de Pepper Group.
 
 ---
 
