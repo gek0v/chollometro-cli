@@ -12,6 +12,7 @@ Inspirado en la filosofía y experiencia de usuario de herramientas como `wallap
 - ⚡ **Feed en Directo:** Consulta las ofertas recién publicadas cronológicamente.
 - 🔍 **Búsqueda Avanzada:** Búsqueda rápida por palabras clave con filtros para ocultar ofertas caducadas.
 - 🏷️ **Ficha Técnica Detallada:** Consulta códigos de cupón, descripción completa del vendedor y precios de referencia.
+- ⭐ **Favoritos Locales (`fav`):** Guarda chollos interesantes para consultarlos luego sin conexión.
 - 👀 **Monitorización Continua (`watch`):** Supervisa novedades o búsquedas específicas con alertas de escritorio (`notify-send`) y filtros por precio o temperatura.
 - 🛡️ **Desparasitador de Enlaces (`--clean`):** Extrae o abre el enlace directo a la tienda eliminando códigos de afiliado y rastreadores invasivos.
 - 📊 **Salida JSON:** Compatible con tuberías Unix y scripts automáticos mediante `--json`.
@@ -114,6 +115,26 @@ chollometro config --clear
 ```
 
 Guarda los datos en `~/.config/chollometro/config.json`.
+
+### 8. Gestión de Favoritos (`fav`)
+```bash
+# Guardar un chollo por ID
+chollometro fav add 2048812
+
+# Listar todos los chollos favoritos guardados
+chollometro fav list
+
+# Salida en JSON
+chollometro fav list --json
+
+# Eliminar un chollo de favoritos
+chollometro fav rm 2048812
+
+# Vaciar toda la lista
+chollometro fav clear
+```
+
+Guarda los chollos en `~/.config/chollometro/favorites.json`.
 
 ---
 

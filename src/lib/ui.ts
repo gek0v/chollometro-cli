@@ -1,6 +1,7 @@
 import chalk from "chalk";
 import Table from "cli-table3";
 import type { Deal, SearchResultItem } from "../types/index.js";
+import type { SavedDeal } from "./favorites.js";
 
 /**
  * Formatea visualmente la temperatura de una oferta
@@ -117,4 +118,37 @@ export function renderDealDetail(deal: Deal): void {
     console.log(chalk.white(cleanDesc.slice(0, 1000) + (cleanDesc.length > 1000 ? "..." : "")));
   }
   console.log("");
+}
+
+/**
+ * Renderiza la lista de chollos guardados como favoritos
+ */
+export function renderFavoritesTable(favorites: SavedDeal[]): void {
+  const table = new Table({
+    head: [
+      chalk.cyan.bold("ID"),
+      chalk.cyan.bold("Temp"),
+      chalk.cyan.bold("Precio"),
+      chalk.cyan.bold("Tienda"),
+      chalk.cyan.bold("Cupón"),
+      chalk.cyan.bold("Guardado"),
+      chalk.cyan.bold("Título"),
+    ],
+    colWidths: [10, 10, 12, 14, 12, 12, 40],
+    wordWrap: true,
+  });
+
+  for (const f of favorites) {
+    const id = chalk.white(f.id);
+    const temp = formatTemperature(f.temperature);
+    const price = chalk.green.bold(f.price);
+    const merchant = chalk.gray(f.merchant);
+    const coupon = f.voucherCode ? chalk.bgYellow.black(` ${f.voucherCode} `) : chalk.gray("-");
+    const date = chalk.dim(new Date(f.savedAt).toLocaleDateString());
+    const title = f.title;
+
+    table.push([id, temp, price, merchant, coupon, date, title]);
+  }
+
+  console.log(table.toString());
 }

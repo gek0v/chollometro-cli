@@ -5,9 +5,10 @@ import chalk from "chalk";
 import { ChollometroClient } from "./lib/client.js";
 import { searchDeals } from "./lib/search.js";
 import { resolveMerchantUrl } from "./lib/url-cleaner.js";
-import { renderDealsTable, renderSearchTable, renderDealDetail } from "./lib/ui.js";
+import { renderDealsTable, renderSearchTable, renderDealDetail, renderFavoritesTable } from "./lib/ui.js";
 import { startWatcher } from "./lib/watcher.js";
 import { loadConfig, saveConfig, getConfigPath } from "./lib/config.js";
+import { saveFavorite, loadFavorites, removeFavorite, clearFavorites } from "./lib/favorites.js";
 
 const program = new Command();
 
@@ -226,6 +227,67 @@ program
     console.log(`Telegram Bot Token : ${maskedToken}`);
     console.log(`Telegram Chat ID   : ${current.telegramChatId || chalk.gray("(no configurado)")}`);
     console.log(`Webhook URL        : ${current.webhookUrl || chalk.gray("(no configurado)")}`);
+  });
+
+// 8. Comando FAV (Guardar, listar y gestionar favoritos)
+const favCommand = program
+  .command("fav")
+  .description("Gestiona los chollos favoritos guardados localmente");
+
+favCommand
+  .command("list")
+  .description("Lista todos los chollos guardados")
+  .option("--json", "Salida en formato JSON crudo")
+  .action((options) => {
+    const list = loadFavorites();
+    if (list.length === 0) {
+      console.log(chalk.yellow("No tienes ningún chollo guardado en favoritos."));
+      console.log(chalk.gray("Usa 'chollometro fav add <threadId>' para guardar ofertas."));
+      return;
+    }
+
+    if (options.json) {
+      console.log(JSON.stringify(list, null, 2));
+    } else {
+      renderFavoritesTable(list);
+    }
+  });
+
+favCommand
+  .command("add <threadId>")
+  .description("Guarda un chollo por su ID en favoritos")
+  .action(async (threadId) => {
+    const spinner = ora(`Obteniendo datos del chollo #${threadId}...`).start();
+    try {
+      const client = new ChollometroClient();
+      const deal = await client.getDealDetail(threadId);
+      const saved = saveFavorite(deal);
+      spinner.succeed(`Chollo guardado en favoritos: ${chalk.bold(saved.title)}`);
+    } catch (error: unknown) {
+      const msg = error instanceof Error ? error.message : String(error);
+      spinner.fail(`Error al guardar favorito: ${msg}`);
+      process.exit(1);
+    }
+  });
+
+favCommand
+  .command("rm <threadId>")
+  .description("Elimina un chollo de favoritos por su ID")
+  .action((threadId) => {
+    const ok = removeFavorite(threadId);
+    if (ok) {
+      console.log(chalk.green(`✔ Chollo #${threadId} eliminado de favoritos.`));
+    } else {
+      console.log(chalk.yellow(`El chollo #${threadId} no estaba en la lista de favoritos.`));
+    }
+  });
+
+favCommand
+  .command("clear")
+  .description("Elimina todos los chollos guardados")
+  .action(() => {
+    clearFavorites();
+    console.log(chalk.yellow("Todos los favoritos han sido eliminados."));
   });
 
 program.parse(process.argv);
