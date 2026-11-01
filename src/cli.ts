@@ -9,6 +9,8 @@ import { renderDealsTable, renderSearchTable, renderDealDetail, renderFavoritesT
 import { startWatcher } from "./lib/watcher.js";
 import { loadConfig, saveConfig, getConfigPath } from "./lib/config.js";
 import { saveFavorite, loadFavorites, removeFavorite, clearFavorites } from "./lib/favorites.js";
+import { dealsToToon, searchResultsToToon, dealDetailToToon, favoritesToToon } from "./lib/toon.js";
+import { startMcpServer } from "./lib/mcp.js";
 
 const program = new Command();
 
@@ -24,8 +26,14 @@ program
   .option("-l, --limit <number>", "Número máximo de resultados", "15")
   .option("-m, --min-temp <number>", "Temperatura mínima para filtrar", "0")
   .option("--json", "Salida en formato JSON crudo")
+  .option("--toon", "Salida en formato ultra-compacto TOON para LLMs")
+  .option("--format <type>", "Formato explícito: 'table', 'json' o 'toon'")
   .action(async (options) => {
-    const spinner = ora("Consultando ofertas destacadas...").start();
+    const isToon = options.toon || options.format === "toon";
+    const isJson = options.json || options.format === "json";
+    const isMachine = isToon || isJson;
+
+    const spinner = isMachine ? null : ora("Consultando ofertas destacadas...").start();
     try {
       const client = new ChollometroClient();
       let deals = await client.getHotDeals(parseInt(options.limit, 10));
@@ -35,15 +43,18 @@ program
         deals = deals.filter((d) => d.temperature >= minTemp);
       }
 
-      spinner.stop();
+      spinner?.stop();
 
-      if (options.json) {
+      if (isToon) {
+        console.log(dealsToToon(deals));
+      } else if (isJson) {
         console.log(JSON.stringify(deals, null, 2));
       } else {
         renderDealsTable(deals);
       }
     } catch (error: any) {
-      spinner.fail(`Error al obtener ofertas: ${error.message}`);
+      if (spinner) spinner.fail(`Error al obtener ofertas: ${error.message}`);
+      else console.error(`Error: ${error.message}`);
       process.exit(1);
     }
   });
@@ -54,20 +65,29 @@ program
   .description("Muestra las últimas ofertas recién publicadas por los usuarios")
   .option("-l, --limit <number>", "Número máximo de resultados", "15")
   .option("--json", "Salida en formato JSON crudo")
+  .option("--toon", "Salida en formato ultra-compacto TOON para LLMs")
+  .option("--format <type>", "Formato explícito: 'table', 'json' o 'toon'")
   .action(async (options) => {
-    const spinner = ora("Obteniendo últimos chollos...").start();
+    const isToon = options.toon || options.format === "toon";
+    const isJson = options.json || options.format === "json";
+    const isMachine = isToon || isJson;
+
+    const spinner = isMachine ? null : ora("Obteniendo últimos chollos...").start();
     try {
       const client = new ChollometroClient();
       const deals = await client.getNewDeals(parseInt(options.limit, 10));
-      spinner.stop();
+      spinner?.stop();
 
-      if (options.json) {
+      if (isToon) {
+        console.log(dealsToToon(deals));
+      } else if (isJson) {
         console.log(JSON.stringify(deals, null, 2));
       } else {
         renderDealsTable(deals);
       }
     } catch (error: any) {
-      spinner.fail(`Error al obtener novedades: ${error.message}`);
+      if (spinner) spinner.fail(`Error al obtener novedades: ${error.message}`);
+      else console.error(`Error: ${error.message}`);
       process.exit(1);
     }
   });
@@ -79,27 +99,38 @@ program
   .option("-p, --page <number>", "Número de página", "1")
   .option("--hide-expired", "Ocultar ofertas marcadas como expiradas")
   .option("--json", "Salida en formato JSON crudo")
+  .option("--toon", "Salida en formato ultra-compacto TOON para LLMs")
+  .option("--format <type>", "Formato explícito: 'table', 'json' o 'toon'")
   .action(async (query, options) => {
-    const spinner = ora(`Buscando ofertas para "${query}"...`).start();
+    const isToon = options.toon || options.format === "toon";
+    const isJson = options.json || options.format === "json";
+    const isMachine = isToon || isJson;
+
+    const spinner = isMachine ? null : ora(`Buscando ofertas para "${query}"...`).start();
     try {
       const results = await searchDeals(query, {
         page: parseInt(options.page, 10),
         hideExpired: options.hideExpired,
       });
-      spinner.stop();
+      spinner?.stop();
 
       if (results.length === 0) {
-        console.log(chalk.yellow(`No se encontraron ofertas para "${query}".`));
+        if (!isMachine) {
+          console.log(chalk.yellow(`No se encontraron ofertas para "${query}".`));
+        }
         return;
       }
 
-      if (options.json) {
+      if (isToon) {
+        console.log(searchResultsToToon(results, query));
+      } else if (isJson) {
         console.log(JSON.stringify(results, null, 2));
       } else {
         renderSearchTable(results);
       }
     } catch (error: any) {
-      spinner.fail(`Error en la búsqueda: ${error.message}`);
+      if (spinner) spinner.fail(`Error en la búsqueda: ${error.message}`);
+      else console.error(`Error: ${error.message}`);
       process.exit(1);
     }
   });
@@ -109,20 +140,29 @@ program
   .command("info <threadId>")
   .description("Muestra el detalle completo, cupones y condiciones de un chollo")
   .option("--json", "Salida en formato JSON crudo")
+  .option("--toon", "Salida en formato ultra-compacto TOON para LLMs")
+  .option("--format <type>", "Formato explícito: 'detail', 'json' o 'toon'")
   .action(async (threadId, options) => {
-    const spinner = ora(`Obteniendo detalles del chollo #${threadId}...`).start();
+    const isToon = options.toon || options.format === "toon";
+    const isJson = options.json || options.format === "json";
+    const isMachine = isToon || isJson;
+
+    const spinner = isMachine ? null : ora(`Obteniendo detalles del chollo #${threadId}...`).start();
     try {
       const client = new ChollometroClient();
       const deal = await client.getDealDetail(threadId);
-      spinner.stop();
+      spinner?.stop();
 
-      if (options.json) {
+      if (isToon) {
+        console.log(dealDetailToToon(deal));
+      } else if (isJson) {
         console.log(JSON.stringify(deal, null, 2));
       } else {
         renderDealDetail(deal);
       }
     } catch (error: any) {
-      spinner.fail(`Error al obtener detalle del chollo: ${error.message}`);
+      if (spinner) spinner.fail(`Error al obtener detalle del chollo: ${error.message}`);
+      else console.error(`Error: ${error.message}`);
       process.exit(1);
     }
   });
@@ -238,15 +278,24 @@ favCommand
   .command("list")
   .description("Lista todos los chollos guardados")
   .option("--json", "Salida en formato JSON crudo")
+  .option("--toon", "Salida en formato ultra-compacto TOON para LLMs")
+  .option("--format <type>", "Formato explícito: 'table', 'json' o 'toon'")
   .action((options) => {
     const list = loadFavorites();
+    const isToon = options.toon || options.format === "toon";
+    const isJson = options.json || options.format === "json";
+
     if (list.length === 0) {
-      console.log(chalk.yellow("No tienes ningún chollo guardado en favoritos."));
-      console.log(chalk.gray("Usa 'chollometro fav add <threadId>' para guardar ofertas."));
+      if (!isToon && !isJson) {
+        console.log(chalk.yellow("No tienes ningún chollo guardado en favoritos."));
+        console.log(chalk.gray("Usa 'chollometro fav add <threadId>' para guardar ofertas."));
+      }
       return;
     }
 
-    if (options.json) {
+    if (isToon) {
+      console.log(favoritesToToon(list));
+    } else if (isJson) {
       console.log(JSON.stringify(list, null, 2));
     } else {
       renderFavoritesTable(list);
@@ -288,6 +337,20 @@ favCommand
   .action(() => {
     clearFavorites();
     console.log(chalk.yellow("Todos los favoritos han sido eliminados."));
+  });
+
+// 9. Comando MCP (Servidor Model Context Protocol nativo sobre stdio)
+program
+  .command("mcp")
+  .description("Inicia el servidor Model Context Protocol (MCP) sobre stdio para agentes LLM")
+  .action(async () => {
+    try {
+      await startMcpServer();
+    } catch (error: unknown) {
+      const msg = error instanceof Error ? error.message : String(error);
+      process.stderr.write(`Error fatal en servidor MCP: ${msg}\n`);
+      process.exit(1);
+    }
   });
 
 program.parse(process.argv);

@@ -5,6 +5,7 @@ import { cleanUrl } from "../src/lib/url-cleaner.js";
 import { formatTemperature } from "../src/lib/ui.js";
 import { saveFavorite, loadFavorites, removeFavorite, clearFavorites } from "../src/lib/favorites.js";
 import { saveConfig, loadConfig } from "../src/lib/config.js";
+import { dealsToToon, dealDetailToToon } from "../src/lib/toon.js";
 import type { Deal } from "../src/types/index.js";
 
 test("URL Cleaner: elimina parámetros de afiliación y tracking", () => {
@@ -84,4 +85,26 @@ test("Config: persistencia de configuración de Telegram y Webhooks", () => {
     telegramChatId: previous.telegramChatId || "",
     webhookUrl: previous.webhookUrl || "",
   });
+});
+
+test("TOON: serialización ultra-compacta para LLMs", () => {
+  const mockDeals: Deal[] = [
+    {
+      threadId: "1001",
+      title: "Oferta A",
+      url: "https://www.chollometro.com/ofertas/a-1001",
+      price: 29.99,
+      temperature: 450,
+      voucherCode: "DESCUENTO5",
+      merchant: { merchantName: "Amazon" },
+    },
+  ];
+
+  const toonDeals = dealsToToon(mockDeals);
+  assert.ok(toonDeals.includes("[CHOLLOS]: count=1"));
+  assert.ok(toonDeals.includes("1001|29.99€|450°|Amazon|DESCUENTO5|Oferta A"));
+
+  const toonDetail = dealDetailToToon(mockDeals[0]);
+  assert.ok(toonDetail.includes("[CHOLLO_DETALLE]: id=1001"));
+  assert.ok(toonDetail.includes("cupon: DESCUENTO5"));
 });

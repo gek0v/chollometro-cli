@@ -15,6 +15,8 @@ Inspirado en la filosofía y experiencia de usuario de herramientas como `wallap
 - ⭐ **Favoritos Locales (`fav`):** Guarda chollos interesantes para consultarlos luego sin conexión.
 - 👀 **Monitorización Continua (`watch`):** Supervisa novedades o búsquedas específicas con alertas de escritorio (`notify-send`) y filtros por precio o temperatura.
 - 🛡️ **Desparasitador de Enlaces (`--clean`):** Extrae o abre el enlace directo a la tienda eliminando códigos de afiliado y rastreadores invasivos.
+- 🤖 **Servidor MCP Nativo (`mcp`):** Integración directa como herramienta para Claude Code, Cursor y agentes en Pi-Mesh mediante Model Context Protocol.
+- ⚡ **Formato TOON para LLMs (`--toon`):** Serialización ultra-compacta con hasta un 60% de ahorro de tokens en ventanas de contexto.
 - 📊 **Salida JSON:** Compatible con tuberías Unix y scripts automáticos mediante `--json`.
 
 ---
@@ -135,6 +137,28 @@ chollometro fav clear
 ```
 
 Guarda los chollos en `~/.config/chollometro/favorites.json`.
+
+### 9. Servidor MCP para Agentes de IA (`mcp`)
+Inicia el servidor Model Context Protocol sobre stdio (JSON-RPC 2.0) para que herramientas como Claude Code, Cursor o agentes en Pi-Mesh consuman las ofertas de Chollometro:
+```bash
+chollometro mcp
+```
+
+Herramientas MCP expuestas:
+- `chollometro_hot_deals`: Obtiene ofertas destacadas (`limit`, `minTemp`, `format: toon|json`).
+- `chollometro_search_deals`: Búsqueda semántica por producto (`query`, `page`, `hideExpired`, `format: toon|json`).
+- `chollometro_get_deal`: Ficha detallada con cupón y descripción (`threadId`, `format: toon|json`).
+- `chollometro_clean_url`: Resuelve el enlace final de la tienda sin afiliados ni rastreadores (`threadId`).
+
+### 10. Formato Ultra-Compacto para LLMs (`--toon`)
+Reduce la sobrecarga de tokens frente a JSON omitiendo comillas, llaves y delimitadores redundantes:
+```bash
+# Formato TOON en ofertas calientes
+chollometro hot --toon
+
+# Formato TOON en búsquedas
+chollometro search "ipad air" --toon
+```
 
 ---
 
