@@ -53,7 +53,7 @@ export function dealDetailToToon(deal: Deal): string {
     `cupon: ${deal.voucherCode || "-"}`,
     `estado: ${deal.isExpired ? "EXPIRADO" : "ACTIVO"}`,
     `comentarios: ${deal.commentCount || 0}`,
-    `url: https://www.chollometro.com/ofertas/${deal.threadId}`,
+    `url: ${deal.url ? (deal.url.startsWith("http") ? deal.url : `https://www.chollometro.com${deal.url}`) : `https://www.chollometro.com/ofertas/${deal.threadId}`}`,
     `descripcion: ${cleanDesc}`,
   ].join("\n");
 }

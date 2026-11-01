@@ -101,7 +101,8 @@ export function renderDealDetail(deal: Deal): void {
   }
   console.log(`${chalk.bold("Estado:")}        ${deal.isExpired ? chalk.red.bold("EXPIRADO") : chalk.green("ACTIVO")}`);
   console.log(`${chalk.bold("Comentarios:")}   ${deal.commentCount || 0}`);
-  console.log(`${chalk.bold("Enlace Web:")}    https://www.chollometro.com/ofertas/${deal.threadId}`);
+  const webUrl = deal.url ? (deal.url.startsWith("http") ? deal.url : `https://www.chollometro.com${deal.url}`) : `https://www.chollometro.com/ofertas/${deal.threadId}`;
+  console.log(`${chalk.bold("Enlace Web:")}    ${webUrl}`);
   console.log(`${chalk.bold("Enlace Salto:")}  https://www.chollometro.com/visit/thread/${deal.threadId}`);
 
   if (deal.description) {

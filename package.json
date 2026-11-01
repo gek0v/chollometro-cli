@@ -1,11 +1,24 @@
 {
   "name": "chollometro-cli",
-  "version": "0.1.0",
-  "description": "Herramienta de línea de comandos para explorar, buscar y monitorizar ofertas de Chollometro sin anuncios ni rastreadores.",
+  "version": "0.2.0",
+  "description": "Herramienta de línea de comandos y servidor MCP para explorar, buscar y monitorizar ofertas de Chollometro sin anuncios ni rastreadores.",
   "type": "module",
   "bin": {
     "chollometro": "./dist/cli.js"
   },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gek0v/chollometro-cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/gek0v/chollometro-cli/issues"
+  },
+  "homepage": "https://github.com/gek0v/chollometro-cli#readme",
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
@@ -13,6 +26,7 @@
     "test": "tsx --test tests/*.test.ts",
     "test:unit": "tsx --test tests/unit.test.ts",
     "test:e2e": "tsx --test tests/integration.test.ts",
+    "prepare": "npm run build",
     "start": "node ./dist/cli.js"
   },
   "keywords": [
@@ -22,7 +36,11 @@
     "pepper",
     "graphql",
     "shopping",
-    "scraper"
+    "scraper",
+    "mcp",
+    "model-context-protocol",
+    "telegram-bot",
+    "agent-tool"
   ],
   "author": "Geko",
   "license": "MIT",
