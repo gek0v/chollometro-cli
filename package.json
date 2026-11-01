@@ -4,7 +4,7 @@
   "description": "Herramienta de línea de comandos y servidor MCP para explorar, buscar y monitorizar ofertas de Chollometro sin anuncios ni rastreadores.",
   "type": "module",
   "bin": {
-    "chollometro": "./dist/cli.js"
+    "chollometro": "dist/cli.js"
   },
   "files": [
     "dist",
