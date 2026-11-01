@@ -1,0 +1,22 @@
+[Unit]
+Description=Chollometro CLI Deal Watcher Daemon
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=%I
+# Reemplazar la ruta según tu instalación global (ej. /usr/local/bin/chollometro o %h/.local/bin/chollometro)
+ExecStart=%h/.local/bin/chollometro watch --interval 60 --notify
+Restart=always
+RestartSec=15
+StandardOutput=journal
+StandardError=journal
+
+# Opcional: Variables de entorno para alertas remotas
+# Environment="CHOLLOMETRO_TELEGRAM_TOKEN=123456:ABC-DEF..."
+# Environment="CHOLLOMETRO_TELEGRAM_CHAT_ID=987654321"
+# Environment="CHOLLOMETRO_WEBHOOK_URL=https://tu-servidor.com/webhook"
+
+[Install]
+WantedBy=default.target

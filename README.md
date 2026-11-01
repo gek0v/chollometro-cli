@@ -1,8 +1,27 @@
 # 🛒 Chollometro CLI
 
+[![npm version](https://img.shields.io/npm/v/chollometro-cli.svg?style=flat-square)](https://www.npmjs.com/package/chollometro-cli)
+[![Node version](https://img.shields.io/node/v/chollometro-cli.svg?style=flat-square)](https://nodejs.org)
+[![CI Status](https://img.shields.io/github/actions/workflow/status/gek0v/chollometro-cli/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/gek0v/chollometro-cli/actions)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
+
 > Cliente de terminal rápido, moderno y sin publicidad para consultar, buscar y monitorizar ofertas de [Chollometro](https://www.chollometro.com).
 
 Inspirado en la filosofía y experiencia de usuario de herramientas como `wallapop-cli`.
+
+---
+
+## ⚡ Uso Inmediato (Sin Instalación)
+
+Puedes ejecutar cualquier comando directamente con `npx`:
+
+```bash
+# Ver los chollos más calientes del momento
+npx chollometro-cli hot
+
+# Buscar ofertas de un producto
+npx chollometro-cli search "nintendo switch" --toon
+```
 
 ---
 
@@ -27,19 +46,30 @@ Inspirado en la filosofía y experiencia de usuario de herramientas como `wallap
 - Node.js 20 o superior.
 - pnpm (recomendado) o npm.
 
+### Instalación Rápida de una Línea
+```bash
+curl -fsSL https://raw.githubusercontent.com/gek0v/chollometro-cli/main/install.sh | bash
+```
+
+### Instalación Global vía npm
+```bash
+npm install -g chollometro-cli
+```
+
+### Desde el Código Fuente
 ```bash
 # 1. Clonar el repositorio
-git clone <repo-url> chollometro-cli
+git clone https://github.com/gek0v/chollometro-cli.git
 cd chollometro-cli
 
 # 2. Instalar dependencias
-pnpm install
+npm install
 
 # 3. Compilar el proyecto
-pnpm run build
+npm run build
 
 # 4. Enlazar globalmente para uso en cualquier terminal
-pnpm link --global
+npm link
 ```
 
 ---
@@ -144,6 +174,23 @@ Inicia el servidor Model Context Protocol sobre stdio (JSON-RPC 2.0) para que he
 chollometro mcp
 ```
 
+#### Configuración en Claude Desktop o Cursor (`claude_desktop_config.json`):
+```json
+{
+  "mcpServers": {
+    "chollometro": {
+      "command": "chollometro",
+      "args": ["mcp"]
+    }
+  }
+}
+```
+
+#### Configuración en Pi (`~/.pi/agent/mcp.json`):
+```bash
+pi mcp add chollometro -- chollometro mcp
+```
+
 Herramientas MCP expuestas:
 - `chollometro_hot_deals`: Obtiene ofertas destacadas (`limit`, `minTemp`, `format: toon|json`).
 - `chollometro_search_deals`: Búsqueda semántica por producto (`query`, `page`, `hideExpired`, `format: toon|json`).
@@ -161,6 +208,29 @@ chollometro search "ipad air" --toon
 ```
 
 ---
+
+## 🐳 Despliegue en Servidores 24/7 (Docker y Systemd)
+
+### Con Docker
+```bash
+# Construir la imagen
+docker build -t chollometro-cli .
+
+# Ejecutar el monitorizador en segundo plano enviando alertas a Telegram
+docker run -d --name chollometro-watcher \
+  -e CHOLLOMETRO_TELEGRAM_TOKEN="123456:ABC..." \
+  -e CHOLLOMETRO_TELEGRAM_CHAT_ID="987654321" \
+  chollometro-cli watch --interval 60
+```
+
+### Con Systemd (Linux)
+Copia la plantilla de servicio en tu directorio de servicios de usuario:
+```bash
+mkdir -p ~/.config/systemd/user/
+cp examples/chollometro-watcher.service ~/.config/systemd/user/
+systemctl --user daemon-reload
+systemctl --user enable --now chollometro-watcher.service
+```
 
 ## 🏗️ Estructura del Código Fuente
 
