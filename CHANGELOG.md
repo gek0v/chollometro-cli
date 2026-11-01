@@ -4,6 +4,13 @@ Todas las novedades y cambios notables de este proyecto se documentan en este ar
 
 ---
 
+## [0.2.1] - 2026-11-01
+
+### Documentación
+- Atribución formal y enlace a [wallapop-cli](https://wallapop.micr.dev) (de Microck) en la cabecera y sección de reconocimientos del `README.md`.
+
+---
+
 ## [0.2.0] - 2026-11-01
 
 ### Añadido

@@ -1,6 +1,6 @@
 {
   "name": "chollometro-cli",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Herramienta de línea de comandos y servidor MCP para explorar, buscar y monitorizar ofertas de Chollometro sin anuncios ni rastreadores.",
   "type": "module",
   "bin": {
