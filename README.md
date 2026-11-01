@@ -12,6 +12,7 @@ Inspirado en la filosofía y experiencia de usuario de herramientas como `wallap
 - ⚡ **Feed en Directo:** Consulta las ofertas recién publicadas cronológicamente.
 - 🔍 **Búsqueda Avanzada:** Búsqueda rápida por palabras clave con filtros para ocultar ofertas caducadas.
 - 🏷️ **Ficha Técnica Detallada:** Consulta códigos de cupón, descripción completa del vendedor y precios de referencia.
+- 👀 **Monitorización Continua (`watch`):** Supervisa novedades o búsquedas específicas con alertas de escritorio (`notify-send`) y filtros por precio o temperatura.
 - 🛡️ **Desparasitador de Enlaces (`--clean`):** Extrae o abre el enlace directo a la tienda eliminando códigos de afiliado y rastreadores invasivos.
 - 📊 **Salida JSON:** Compatible con tuberías Unix y scripts automáticos mediante `--json`.
 
@@ -78,6 +79,15 @@ chollometro open 2051905
 
 # Imprime únicamente la URL directa sin trackers ni afiliados
 chollometro open 2051905 --clean --print
+```
+
+### 6. Monitorizar en tiempo real (`watch`)
+```bash
+# Monitorizar novedades generales cada 30 segundos con notificación de escritorio
+chollometro watch --interval 30 --notify
+
+# Monitorizar un producto concreto con precio tope y temperatura mínima
+chollometro watch "nintendo switch" --max-price 250 --min-temp 100 --notify
 ```
 
 ---

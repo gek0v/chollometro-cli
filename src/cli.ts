@@ -6,6 +6,7 @@ import { ChollometroClient } from "./lib/client.js";
 import { searchDeals } from "./lib/search.js";
 import { resolveMerchantUrl } from "./lib/url-cleaner.js";
 import { renderDealsTable, renderSearchTable, renderDealDetail } from "./lib/ui.js";
+import { startWatcher } from "./lib/watcher.js";
 
 const program = new Command();
 
@@ -144,6 +145,33 @@ program
       }
     } catch (error: any) {
       spinner.fail(`Error al abrir oferta: ${error.message}`);
+      process.exit(1);
+    }
+  });
+
+// 6. Comando WATCH (Monitorización continua de ofertas)
+program
+  .command("watch [query]")
+  .description("Monitoriza chollos periódicamente y notifica ante nuevas ofertas")
+  .option("-i, --interval <seconds>", "Intervalo de sondeo en segundos", "60")
+  .option("-m, --max-price <number>", "Precio máximo permitido")
+  .option("-t, --min-temp <number>", "Temperatura mínima de la oferta")
+  .option("-n, --notify", "Emitir notificación de escritorio (notify-send)", false)
+  .option("-o, --open", "Abrir automáticamente en el navegador al detectar", false)
+  .option("--once", "Ejecutar una única comprobación y salir", false)
+  .action(async (query, options) => {
+    try {
+      await startWatcher(query, {
+        interval: Math.max(5, parseInt(options.interval, 10) || 60),
+        maxPrice: options.maxPrice ? parseFloat(options.maxPrice) : undefined,
+        minTemp: options.minTemp ? parseInt(options.minTemp, 10) : undefined,
+        notify: Boolean(options.notify),
+        open: Boolean(options.open),
+        once: Boolean(options.once),
+      });
+    } catch (error: unknown) {
+      const msg = error instanceof Error ? error.message : String(error);
+      console.error(chalk.red(`Error en watcher: ${msg}`));
       process.exit(1);
     }
   });
