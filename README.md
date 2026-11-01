@@ -88,7 +88,15 @@ chollometro watch --interval 30 --notify
 
 # Monitorizar un producto concreto con precio tope y temperatura mínima
 chollometro watch "nintendo switch" --max-price 250 --min-temp 100 --notify
+
+# Enviar alertas a Telegram automáticamente
+chollometro watch "rtx 4070" --telegram-token "<BOT_TOKEN>" --telegram-chat "<CHAT_ID>"
+
+# Despachar eventos a un Webhook (POST JSON)
+chollometro watch --webhook "https://tu-servidor.com/api/chollos"
 ```
+
+También puedes configurar las variables de entorno `CHOLLOMETRO_TELEGRAM_TOKEN`, `CHOLLOMETRO_TELEGRAM_CHAT_ID` y `CHOLLOMETRO_WEBHOOK_URL` para no pasar credenciales por parámetro.
 
 ---
 

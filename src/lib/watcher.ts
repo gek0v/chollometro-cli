@@ -1,5 +1,6 @@
 import { spawn } from "child_process";
 import chalk from "chalk";
+import got from "got";
 import { ChollometroClient } from "./client.js";
 import { searchDeals } from "./search.js";
 import type { Deal, SearchResultItem } from "../types/index.js";
@@ -22,6 +23,59 @@ export interface WatchOptions {
   notify?: boolean;
   open?: boolean;
   once?: boolean;
+  telegramBotToken?: string;
+  telegramChatId?: string;
+  webhookUrl?: string;
+}
+
+async function sendTelegramAlert(token: string, chatId: string, item: WatchItem): Promise<void> {
+  const couponText = item.voucherCode ? `\n🎟️ <b>Cupón:</b> <code>${item.voucherCode}</code>` : "";
+  const text = `🔥 <b>¡Nuevo Chollo en Chollometro!</b>\n\n` +
+    `📌 <b>${item.title}</b>\n` +
+    `💰 <b>Precio:</b> ${item.priceFormatted}\n` +
+    `🏪 <b>Tienda:</b> ${item.merchant}\n` +
+    `🌡️ <b>Temperatura:</b> ${item.temperature}°${couponText}\n\n` +
+    `🔗 <a href="${item.url}">Ver chollo en Chollometro</a>`;
+
+  try {
+    await got.post(`https://api.telegram.org/bot${token}/sendMessage`, {
+      json: {
+        chat_id: chatId,
+        text,
+        parse_mode: "HTML",
+        disable_web_page_preview: false,
+      },
+      timeout: { request: 5000 },
+    });
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error(chalk.red(`\n[Telegram Error] No se pudo enviar mensaje: ${msg}`));
+  }
+}
+
+async function sendWebhookAlert(url: string, item: WatchItem): Promise<void> {
+  try {
+    await got.post(url, {
+      json: {
+        event: "new_deal",
+        deal: {
+          id: item.id,
+          title: item.title,
+          price: item.price,
+          priceFormatted: item.priceFormatted,
+          temperature: item.temperature,
+          merchant: item.merchant,
+          voucherCode: item.voucherCode ?? null,
+          url: item.url,
+        },
+        timestamp: new Date().toISOString(),
+      },
+      timeout: { request: 5000 },
+    });
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error(chalk.red(`\n[Webhook Error] Fallo al despachar POST: ${msg}`));
+  }
 }
 
 function sendDesktopNotification(title: string, message: string): void {
@@ -146,6 +200,17 @@ export async function startWatcher(
             `Chollo encontrado: ${item.priceFormatted}`,
             `${item.title} (${item.merchant})`
           );
+        }
+
+        const telegramToken = options.telegramBotToken || process.env.CHOLLOMETRO_TELEGRAM_TOKEN;
+        const telegramChat = options.telegramChatId || process.env.CHOLLOMETRO_TELEGRAM_CHAT_ID;
+        if (telegramToken && telegramChat) {
+          sendTelegramAlert(telegramToken, telegramChat, item).catch(() => {});
+        }
+
+        const webhook = options.webhookUrl || process.env.CHOLLOMETRO_WEBHOOK_URL;
+        if (webhook) {
+          sendWebhookAlert(webhook, item).catch(() => {});
         }
 
         if (options.open) {

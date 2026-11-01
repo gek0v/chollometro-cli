@@ -158,6 +158,9 @@ program
   .option("-t, --min-temp <number>", "Temperatura mínima de la oferta")
   .option("-n, --notify", "Emitir notificación de escritorio (notify-send)", false)
   .option("-o, --open", "Abrir automáticamente en el navegador al detectar", false)
+  .option("--telegram-token <token>", "Token de Bot de Telegram (o env CHOLLOMETRO_TELEGRAM_TOKEN)")
+  .option("--telegram-chat <chatId>", "Chat ID de Telegram (o env CHOLLOMETRO_TELEGRAM_CHAT_ID)")
+  .option("--webhook <url>", "URL de Webhook para recibir peticiones POST JSON (o env CHOLLOMETRO_WEBHOOK_URL)")
   .option("--once", "Ejecutar una única comprobación y salir", false)
   .action(async (query, options) => {
     try {
@@ -168,6 +171,9 @@ program
         notify: Boolean(options.notify),
         open: Boolean(options.open),
         once: Boolean(options.once),
+        telegramBotToken: options.telegramToken,
+        telegramChatId: options.telegramChat,
+        webhookUrl: options.webhook,
       });
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : String(error);
