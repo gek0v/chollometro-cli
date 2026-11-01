@@ -7,6 +7,7 @@ import { searchDeals } from "./lib/search.js";
 import { resolveMerchantUrl } from "./lib/url-cleaner.js";
 import { renderDealsTable, renderSearchTable, renderDealDetail } from "./lib/ui.js";
 import { startWatcher } from "./lib/watcher.js";
+import { loadConfig, saveConfig, getConfigPath } from "./lib/config.js";
 
 const program = new Command();
 
@@ -180,6 +181,51 @@ program
       console.error(chalk.red(`Error en watcher: ${msg}`));
       process.exit(1);
     }
+  });
+
+// 7. Comando CONFIG (Gestión de configuración persistente)
+program
+  .command("config")
+  .description("Consulta o actualiza la configuración persistente (Telegram, Webhooks)")
+  .option("--set-telegram-token <token>", "Guarda el token de bot de Telegram")
+  .option("--set-telegram-chat <chatId>", "Guarda el chat ID de Telegram")
+  .option("--set-webhook <url>", "Guarda la URL del webhook HTTP")
+  .option("--clear", "Limpia toda la configuración almacenada")
+  .action((options) => {
+    if (options.clear) {
+      saveConfig({ telegramToken: undefined, telegramChatId: undefined, webhookUrl: undefined });
+      console.log(chalk.yellow("Configuración eliminada."));
+      return;
+    }
+
+    const hasUpdates =
+      options.setTelegramToken !== undefined ||
+      options.setTelegramChat !== undefined ||
+      options.setWebhook !== undefined;
+
+    if (hasUpdates) {
+      const updated = saveConfig({
+        ...(options.setTelegramToken !== undefined && { telegramToken: options.setTelegramToken }),
+        ...(options.setTelegramChat !== undefined && { telegramChatId: options.setTelegramChat }),
+        ...(options.setWebhook !== undefined && { webhookUrl: options.setWebhook }),
+      });
+      console.log(chalk.green("✔ Configuración guardada correctamente."));
+      console.log(chalk.gray(`Archivo: ${getConfigPath()}`));
+      console.log(JSON.stringify(updated, null, 2));
+      return;
+    }
+
+    const current = loadConfig();
+    console.log(chalk.bold.cyan("🔧 Configuración actual de Chollometro CLI:"));
+    console.log(chalk.gray(`Ruta: ${getConfigPath()}\n`));
+
+    const maskedToken = current.telegramToken
+      ? current.telegramToken.slice(0, 6) + "..." + current.telegramToken.slice(-4)
+      : chalk.gray("(no configurado)");
+
+    console.log(`Telegram Bot Token : ${maskedToken}`);
+    console.log(`Telegram Chat ID   : ${current.telegramChatId || chalk.gray("(no configurado)")}`);
+    console.log(`Webhook URL        : ${current.webhookUrl || chalk.gray("(no configurado)")}`);
   });
 
 program.parse(process.argv);

@@ -96,7 +96,24 @@ chollometro watch "rtx 4070" --telegram-token "<BOT_TOKEN>" --telegram-chat "<CH
 chollometro watch --webhook "https://tu-servidor.com/api/chollos"
 ```
 
-También puedes configurar las variables de entorno `CHOLLOMETRO_TELEGRAM_TOKEN`, `CHOLLOMETRO_TELEGRAM_CHAT_ID` y `CHOLLOMETRO_WEBHOOK_URL` para no pasar credenciales por parámetro.
+También puedes configurar las variables de entorno `CHOLLOMETRO_TELEGRAM_TOKEN`, `CHOLLOMETRO_TELEGRAM_CHAT_ID` y `CHOLLOMETRO_WEBHOOK_URL` o guardarlas de forma persistente con el comando `config`.
+
+### 7. Configuración persistente (`config`)
+```bash
+# Guardar token y chat de Telegram
+chollometro config --set-telegram-token "123456:ABC-DEF..." --set-telegram-chat "987654321"
+
+# Guardar URL de Webhook
+chollometro config --set-webhook "https://tu-servidor.com/webhook"
+
+# Ver configuración actual (tokens sensibles enmascarados)
+chollometro config
+
+# Limpiar toda la configuración
+chollometro config --clear
+```
+
+Guarda los datos en `~/.config/chollometro/config.json`.
 
 ---
 

@@ -3,6 +3,7 @@ import chalk from "chalk";
 import got from "got";
 import { ChollometroClient } from "./client.js";
 import { searchDeals } from "./search.js";
+import { loadConfig } from "./config.js";
 import type { Deal, SearchResultItem } from "../types/index.js";
 
 export interface WatchItem {
@@ -202,13 +203,14 @@ export async function startWatcher(
           );
         }
 
-        const telegramToken = options.telegramBotToken || process.env.CHOLLOMETRO_TELEGRAM_TOKEN;
-        const telegramChat = options.telegramChatId || process.env.CHOLLOMETRO_TELEGRAM_CHAT_ID;
+        const cfg = loadConfig();
+        const telegramToken = options.telegramBotToken || process.env.CHOLLOMETRO_TELEGRAM_TOKEN || cfg.telegramToken;
+        const telegramChat = options.telegramChatId || process.env.CHOLLOMETRO_TELEGRAM_CHAT_ID || cfg.telegramChatId;
         if (telegramToken && telegramChat) {
           sendTelegramAlert(telegramToken, telegramChat, item).catch(() => {});
         }
 
-        const webhook = options.webhookUrl || process.env.CHOLLOMETRO_WEBHOOK_URL;
+        const webhook = options.webhookUrl || process.env.CHOLLOMETRO_WEBHOOK_URL || cfg.webhookUrl;
         if (webhook) {
           sendWebhookAlert(webhook, item).catch(() => {});
         }
