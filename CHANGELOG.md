@@ -4,6 +4,13 @@ Todas las novedades y cambios notables de este proyecto se documentan en este ar
 
 ---
 
+## [0.3.2] - 2026-11-01
+
+### Añadido
+- **Flag `--pretty` explícito:** Soporte para forzar salida visual humana enriquecida o mediante `--format pretty` / `--format table` en todos los comandos de consulta.
+
+---
+
 ## [0.3.1] - 2026-11-01
 
 ### Añadido
