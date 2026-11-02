@@ -4,6 +4,13 @@ Todas las novedades y cambios notables de este proyecto se documentan en este ar
 
 ---
 
+## [0.3.0] - 2026-11-01
+
+### Añadido
+- **Comando TUI Dashboard (`chollometro tui` / `dash`):** Interfaz interactiva de terminal a pantalla completa para navegar por teclado ofertas calientes, novedades, feed de portada, favoritos y monitorización en vivo.
+
+---
+
 ## [0.2.1] - 2026-11-01
 
 ### Documentación
