@@ -21,7 +21,7 @@ const program = new Command();
 program
   .name("chollometro")
   .description("CLI rápido y limpio para consultar y buscar ofertas en Chollometro")
-  .version("0.3.0");
+  .version("0.3.1");
 
 // 1. Comando HOT (Chollos más calientes)
 program

@@ -4,6 +4,14 @@ Todas las novedades y cambios notables de este proyecto se documentan en este ar
 
 ---
 
+## [0.3.1] - 2026-11-01
+
+### Añadido
+- **Comando `comments` (alias: `comentarios`):** Consulta y lectura de los comentarios y opiniones de la comunidad de Chollometro en una oferta.
+- **Herramienta MCP `chollometro_get_comments`:** Permite a agentes de IA leer comentarios estructurados o en formato `toon`.
+
+---
+
 ## [0.3.0] - 2026-11-01
 
 ### Añadido
