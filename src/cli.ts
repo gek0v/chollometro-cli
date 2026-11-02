@@ -31,7 +31,8 @@ program
   .option("-m, --min-temp <number>", "Temperatura mínima para filtrar", "0")
   .option("--json", "Salida en formato JSON crudo")
   .option("--toon", "Salida en formato ultra-compacto TOON para LLMs")
-  .option("--format <type>", "Formato explícito: 'table', 'json' o 'toon'")
+  .option("--pretty", "Salida formateada visualmente para humanos (por defecto)")
+  .option("--format <type>", "Formato explícito: 'table'|'pretty', 'json' o 'toon'")
   .action(async (options) => {
     const isToon = options.toon || options.format === "toon";
     const isJson = options.json || options.format === "json";
@@ -70,7 +71,8 @@ program
   .option("-l, --limit <number>", "Número máximo de resultados", "15")
   .option("--json", "Salida en formato JSON crudo")
   .option("--toon", "Salida en formato ultra-compacto TOON para LLMs")
-  .option("--format <type>", "Formato explícito: 'table', 'json' o 'toon'")
+  .option("--pretty", "Salida formateada visualmente para humanos (por defecto)")
+  .option("--format <type>", "Formato explícito: 'table'|'pretty', 'json' o 'toon'")
   .action(async (options) => {
     const isToon = options.toon || options.format === "toon";
     const isJson = options.json || options.format === "json";
@@ -104,7 +106,8 @@ program
   .option("--hide-expired", "Ocultar ofertas marcadas como expiradas")
   .option("--json", "Salida en formato JSON crudo")
   .option("--toon", "Salida en formato ultra-compacto TOON para LLMs")
-  .option("--format <type>", "Formato explícito: 'table', 'json' o 'toon'")
+  .option("--pretty", "Salida formateada visualmente para humanos (por defecto)")
+  .option("--format <type>", "Formato explícito: 'table'|'pretty', 'json' o 'toon'")
   .action(async (query, options) => {
     const isToon = options.toon || options.format === "toon";
     const isJson = options.json || options.format === "json";
@@ -145,7 +148,8 @@ program
   .description("Muestra el detalle completo, cupones y condiciones de un chollo")
   .option("--json", "Salida en formato JSON crudo")
   .option("--toon", "Salida en formato ultra-compacto TOON para LLMs")
-  .option("--format <type>", "Formato explícito: 'detail', 'json' o 'toon'")
+  .option("--pretty", "Salida formateada visualmente para humanos (por defecto)")
+  .option("--format <type>", "Formato explícito: 'detail'|'pretty', 'json' o 'toon'")
   .action(async (threadId, options) => {
     const isToon = options.toon || options.format === "toon";
     const isJson = options.json || options.format === "json";
@@ -203,7 +207,8 @@ program
   .option("-l, --limit <number>", "Número máximo de comentarios a recuperar", "20")
   .option("--json", "Salida en formato JSON crudo")
   .option("--toon", "Salida en formato ultra-compacto TOON para LLMs")
-  .option("--format <type>", "Formato explícito: 'list', 'json' o 'toon'")
+  .option("--pretty", "Salida formateada visualmente para humanos (por defecto)")
+  .option("--format <type>", "Formato explícito: 'list'|'pretty', 'json' o 'toon'")
   .action(async (threadId, options) => {
     const isToon = options.toon || options.format === "toon";
     const isJson = options.json || options.format === "json";
@@ -325,7 +330,8 @@ favCommand
   .description("Lista todos los chollos guardados")
   .option("--json", "Salida en formato JSON crudo")
   .option("--toon", "Salida en formato ultra-compacto TOON para LLMs")
-  .option("--format <type>", "Formato explícito: 'table', 'json' o 'toon'")
+  .option("--pretty", "Salida formateada en tabla para humanos (por defecto)")
+  .option("--format <type>", "Formato explícito: 'table'|'pretty', 'json' o 'toon'")
   .action((options) => {
     const list = loadFavorites();
     const isToon = options.toon || options.format === "toon";

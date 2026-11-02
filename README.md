@@ -38,6 +38,7 @@ npx chollometro-cli search "nintendo switch" --toon
 - 🖥️ **Dashboard Interactivo TUI (`tui` / `dash`):** Interfaz completa de terminal con navegación estilo Vim, búsqueda instantánea y previsualización.
 - 🤖 **Servidor MCP Nativo (`mcp`):** Integración directa como herramienta para Claude Code, Cursor y agentes en Pi-Mesh mediante Model Context Protocol.
 - ⚡ **Formato TOON para LLMs (`--toon`):** Serialización ultra-compacta con hasta un 60% de ahorro de tokens en ventanas de contexto.
+- 🎨 **Salida Pretty para Humanos (`--pretty`):** Tablas enriquecidas con iconos, colores ANSI y temperaturas degradadas.
 - 📊 **Salida JSON:** Compatible con tuberías Unix y scripts automáticos mediante `--json`.
 
 ---
@@ -216,6 +217,11 @@ chollometro hot --toon
 
 # Formato TOON en búsquedas
 chollometro search "ipad air" --toon
+
+# Forzar formato tabla humana explícitamente
+chollometro hot --pretty
+# o con --format:
+chollometro search "macbook" --format pretty
 ```
 
 ### 11. Dashboard TUI Interactivo (`tui` / `dash`)
