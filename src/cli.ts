@@ -1,3 +1,7 @@
+import { spawn } from "node:child_process";
+import fs from "node:fs";
+import path from "node:path";
+import os from "node:os";
 import { Command } from "commander";
 import ora from "ora";
 import open from "open";
@@ -351,6 +355,38 @@ program
       process.stderr.write(`Error fatal en servidor MCP: ${msg}\n`);
       process.exit(1);
     }
+  });
+
+// 10. Comando TUI / DASH (Dashboard interactivo de terminal)
+program
+  .command("tui")
+  .alias("dash")
+  .description("Abre el Dashboard interactivo TUI para navegar ofertas con teclado")
+  .action(() => {
+    const candidatePaths = [
+      path.join(os.homedir(), ".local", "bin", "chollometro-dash"),
+      path.join(os.homedir(), "Workspaces", "chollometro-dash", "dist", "index.js"),
+    ];
+
+    const targetBin = candidatePaths.find((p) => fs.existsSync(p));
+
+    if (!targetBin) {
+      console.log(chalk.red("Error: No se encontró el ejecutable de chollometro-dash."));
+      console.log(
+        chalk.gray(
+          "Puedes instalarlo ejecutando:\n  npm install -g chollometro-dash\n  o compilando en ~/Workspaces/chollometro-dash"
+        )
+      );
+      process.exit(1);
+    }
+
+    const child = spawn(process.execPath, [targetBin], {
+      stdio: "inherit",
+    });
+
+    child.on("exit", (code) => {
+      process.exit(code || 0);
+    });
   });
 
 program.parse(process.argv);

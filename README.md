@@ -34,6 +34,7 @@ npx chollometro-cli search "nintendo switch" --toon
 - ⭐ **Favoritos Locales (`fav`):** Guarda chollos interesantes para consultarlos luego sin conexión.
 - 👀 **Monitorización Continua (`watch`):** Supervisa novedades o búsquedas específicas con alertas de escritorio (`notify-send`) y filtros por precio o temperatura.
 - 🛡️ **Desparasitador de Enlaces (`--clean`):** Extrae o abre el enlace directo a la tienda eliminando códigos de afiliado y rastreadores invasivos.
+- 🖥️ **Dashboard Interactivo TUI (`tui` / `dash`):** Interfaz completa de terminal con navegación estilo Vim, búsqueda instantánea y previsualización.
 - 🤖 **Servidor MCP Nativo (`mcp`):** Integración directa como herramienta para Claude Code, Cursor y agentes en Pi-Mesh mediante Model Context Protocol.
 - ⚡ **Formato TOON para LLMs (`--toon`):** Serialización ultra-compacta con hasta un 60% de ahorro de tokens en ventanas de contexto.
 - 📊 **Salida JSON:** Compatible con tuberías Unix y scripts automáticos mediante `--json`.
@@ -206,6 +207,23 @@ chollometro hot --toon
 # Formato TOON en búsquedas
 chollometro search "ipad air" --toon
 ```
+
+### 11. Dashboard TUI Interactivo (`tui` / `dash`)
+Abre la interfaz completa de terminal (desarrollada con Blessed) para explorar ofertas interactivamente:
+```bash
+# Abrir el Dashboard TUI
+chollometro tui
+# o también:
+chollometro dash
+```
+
+Atajos principales:
+- `1` Calientes, `2` Novedades, `3` Feed portada, `4` Favoritos, `5` Alertas en vivo.
+- `j` / `k` o flechas para moverte por la lista.
+- `Enter` para abrir la tienda en tu navegador con URL desparasitada.
+- `f` para añadir/quitar de favoritos.
+- `/` para buscar interactivamente.
+- `q` para salir.
 
 ---
 
