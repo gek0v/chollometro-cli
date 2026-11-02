@@ -1,6 +1,6 @@
 import got, { Got } from "got";
 import { CookieJar } from "tough-cookie";
-import type { Deal } from "../types/index.js";
+import type { Deal, CommentItem } from "../types/index.js";
 
 export class ChollometroClient {
   private static BASE_URL = "https://www.chollometro.com";
@@ -54,7 +54,7 @@ export class ChollometroClient {
   /**
    * Realiza una consulta GraphQL segura al endpoint privado de Chollometro
    */
-  public async query<T = any>(query: string, variables: Record<string, any> = {}): Promise<T> {
+  public async query<T = unknown>(query: string, variables: Record<string, unknown> = {}): Promise<T> {
     await this.initSession();
 
     const response = await this.client.post(ChollometroClient.GRAPHQL_URL, {
@@ -196,5 +196,32 @@ export class ChollometroClient {
     });
 
     return data.thread;
+  }
+
+  /**
+   * Obtiene los comentarios de una oferta o hilo
+   */
+  public async getThreadComments(threadId: string, limit = 20): Promise<CommentItem[]> {
+    const query = `
+      query GetThreadComments($threadId: IDFilter!, $limit: Int) {
+        comments(filter: { threadId: $threadId }, limit: $limit) {
+          items {
+            commentId
+            content
+            createdAt
+            user {
+              username
+            }
+          }
+        }
+      }
+    `;
+
+    const data = await this.query<{ comments: { items: CommentItem[] } }>(query, {
+      threadId: { eq: threadId },
+      limit,
+    });
+
+    return data.comments.items;
   }
 }

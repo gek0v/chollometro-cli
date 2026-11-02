@@ -2,7 +2,7 @@ import readline from "node:readline";
 import { ChollometroClient } from "./client.js";
 import { searchDeals } from "./search.js";
 import { resolveMerchantUrl } from "./url-cleaner.js";
-import { dealsToToon, dealDetailToToon, searchResultsToToon } from "./toon.js";
+import { dealsToToon, dealDetailToToon, searchResultsToToon, commentsToToon } from "./toon.js";
 
 /**
  * Servidor MCP (Model Context Protocol) ligero y nativo sobre stdio JSON-RPC 2.0.
@@ -92,6 +92,31 @@ const TOOLS = [
         threadId: {
           type: "string",
           description: "ID del chollo cuya URL de tienda se desea desenrollar.",
+        },
+      },
+      required: ["threadId"],
+    },
+  },
+  {
+    name: "chollometro_get_comments",
+    description: "Lee los comentarios y opiniones de la comunidad de Chollometro sobre una oferta.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        threadId: {
+          type: "string",
+          description: "ID del chollo del que obtener comentarios (ej. '2051494').",
+        },
+        limit: {
+          type: "number",
+          description: "Número máximo de comentarios a consultar (por defecto 20).",
+          default: 20,
+        },
+        format: {
+          type: "string",
+          enum: ["json", "toon"],
+          description: "Formato de salida ('json' o 'toon').",
+          default: "toon",
         },
       },
       required: ["threadId"],
@@ -196,6 +221,15 @@ export async function startMcpServer(): Promise<void> {
             const clean = await resolveMerchantUrl(threadId, { clean: true });
             sendResponse(id, {
               content: [{ type: "text", text: clean }],
+            });
+          } else if (toolName === "chollometro_get_comments") {
+            const threadId = String(args.threadId || "");
+            const limit = typeof args.limit === "number" ? args.limit : 20;
+            const comments = await client.getThreadComments(threadId, limit);
+
+            const text = args.format === "json" ? JSON.stringify(comments, null, 2) : commentsToToon(comments, threadId);
+            sendResponse(id, {
+              content: [{ type: "text", text }],
             });
           } else {
             sendResponse(id, undefined, {

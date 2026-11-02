@@ -9,11 +9,11 @@ import chalk from "chalk";
 import { ChollometroClient } from "./lib/client.js";
 import { searchDeals } from "./lib/search.js";
 import { resolveMerchantUrl } from "./lib/url-cleaner.js";
-import { renderDealsTable, renderSearchTable, renderDealDetail, renderFavoritesTable } from "./lib/ui.js";
+import { renderDealsTable, renderSearchTable, renderDealDetail, renderFavoritesTable, renderCommentsList } from "./lib/ui.js";
 import { startWatcher } from "./lib/watcher.js";
 import { loadConfig, saveConfig, getConfigPath } from "./lib/config.js";
 import { saveFavorite, loadFavorites, removeFavorite, clearFavorites } from "./lib/favorites.js";
-import { dealsToToon, searchResultsToToon, dealDetailToToon, favoritesToToon } from "./lib/toon.js";
+import { dealsToToon, searchResultsToToon, dealDetailToToon, favoritesToToon, commentsToToon } from "./lib/toon.js";
 import { startMcpServer } from "./lib/mcp.js";
 
 const program = new Command();
@@ -191,6 +191,48 @@ program
       }
     } catch (error: any) {
       spinner.fail(`Error al abrir oferta: ${error.message}`);
+      process.exit(1);
+    }
+  });
+
+// 5b. Comando COMMENTS (Consulta los comentarios de la comunidad sobre un chollo)
+program
+  .command("comments <threadId>")
+  .alias("comentarios")
+  .description("Lee los comentarios y opiniones de los usuarios sobre una oferta")
+  .option("-l, --limit <number>", "Número máximo de comentarios a recuperar", "20")
+  .option("--json", "Salida en formato JSON crudo")
+  .option("--toon", "Salida en formato ultra-compacto TOON para LLMs")
+  .option("--format <type>", "Formato explícito: 'list', 'json' o 'toon'")
+  .action(async (threadId, options) => {
+    const isToon = options.toon || options.format === "toon";
+    const isJson = options.json || options.format === "json";
+    const isMachine = isToon || isJson;
+
+    const spinner = isMachine ? null : ora(`Consultando comentarios para #${threadId}...`).start();
+    try {
+      const client = new ChollometroClient();
+      const limit = parseInt(options.limit, 10) || 20;
+      const comments = await client.getThreadComments(threadId, limit);
+      spinner?.stop();
+
+      if (comments.length === 0) {
+        if (!isMachine) {
+          console.log(chalk.yellow(`No hay comentarios disponibles para el chollo #${threadId}.`));
+        }
+        return;
+      }
+
+      if (isToon) {
+        console.log(commentsToToon(comments, threadId));
+      } else if (isJson) {
+        console.log(JSON.stringify(comments, null, 2));
+      } else {
+        renderCommentsList(comments, threadId);
+      }
+    } catch (error: any) {
+      if (spinner) spinner.fail(`Error al obtener comentarios: ${error.message}`);
+      else console.error(`Error: ${error.message}`);
       process.exit(1);
     }
   });

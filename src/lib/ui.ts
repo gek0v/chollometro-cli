@@ -1,6 +1,6 @@
 import chalk from "chalk";
 import Table from "cli-table3";
-import type { Deal, SearchResultItem } from "../types/index.js";
+import type { Deal, SearchResultItem, CommentItem } from "../types/index.js";
 import type { SavedDeal } from "./favorites.js";
 
 /**
@@ -152,4 +152,32 @@ export function renderFavoritesTable(favorites: SavedDeal[]): void {
   }
 
   console.log(table.toString());
+}
+
+/**
+ * Renderiza la lista de comentarios de una oferta
+ */
+export function renderCommentsList(comments: CommentItem[], threadId: string): void {
+  console.log("");
+  console.log(chalk.bgCyan.black.bold(` [COMENTARIOS DE LA COMUNIDAD - CHOLLO #${threadId}] `));
+  console.log(chalk.gray(`Total mostrados: ${comments.length}\n`));
+
+  for (const c of comments) {
+    const author = chalk.bold.yellow(`@${c.user?.username || "Anónimo"}`);
+    const time = c.createdAt ? chalk.gray(`(${c.createdAt})`) : "";
+    console.log(`${author} ${time}:`);
+
+    const cleanContent = c.content
+      .replace(/<br\s*[\/]?>/gi, "\n")
+      .replace(/<p>/gi, "")
+      .replace(/<\/p>/gi, "\n")
+      .replace(/<li>/gi, " • ")
+      .replace(/<\/li>/gi, "\n")
+      .replace(/<[^>]+>/g, "")
+      .trim();
+
+    console.log(chalk.white(cleanContent));
+    console.log(chalk.gray("----------------------------------------------------------------------"));
+  }
+  console.log("");
 }

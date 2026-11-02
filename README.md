@@ -31,6 +31,7 @@ npx chollometro-cli search "nintendo switch" --toon
 - ⚡ **Feed en Directo:** Consulta las ofertas recién publicadas cronológicamente.
 - 🔍 **Búsqueda Avanzada:** Búsqueda rápida por palabras clave con filtros para ocultar ofertas caducadas.
 - 🏷️ **Ficha Técnica Detallada:** Consulta códigos de cupón, descripción completa del vendedor y precios de referencia.
+- 💬 **Comentarios de la Comunidad (`comments`):** Lee opiniones, trucos y experiencias reales de los usuarios sobre cualquier oferta.
 - ⭐ **Favoritos Locales (`fav`):** Guarda chollos interesantes para consultarlos luego sin conexión.
 - 👀 **Monitorización Continua (`watch`):** Supervisa novedades o búsquedas específicas con alertas de escritorio (`notify-send`) y filtros por precio o temperatura.
 - 🛡️ **Desparasitador de Enlaces (`--clean`):** Extrae o abre el enlace directo a la tienda eliminando códigos de afiliado y rastreadores invasivos.
@@ -113,6 +114,15 @@ chollometro open 2051905
 
 # Imprime únicamente la URL directa sin trackers ni afiliados
 chollometro open 2051905 --clean --print
+```
+
+### 5b. Leer comentarios de la comunidad (`comments`)
+```bash
+# Leer los últimos 15 comentarios de un chollo
+chollometro comments 2051494 -l 15
+
+# Salida en formato compacto TOON para agentes LLM
+chollometro comments 2051494 --toon
 ```
 
 ### 6. Monitorizar en tiempo real (`watch`)

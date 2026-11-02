@@ -24,3 +24,12 @@ test("ChollometroClient: detalle de oferta específica", async () => {
   assert.ok(detail.title);
   assert.ok(detail.merchant);
 });
+
+test("ChollometroClient: comentarios de la comunidad", async () => {
+  const client = new ChollometroClient();
+  const hot = await client.getHotDeals(1);
+  assert.ok(hot.length > 0);
+
+  const comments = await client.getThreadComments(hot[0].threadId, 5);
+  assert.ok(Array.isArray(comments));
+});

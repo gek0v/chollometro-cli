@@ -1,4 +1,4 @@
-import type { Deal, SearchResultItem } from "../types/index.js";
+import type { Deal, SearchResultItem, CommentItem } from "../types/index.js";
 import type { SavedDeal } from "./favorites.js";
 
 /**
@@ -64,6 +64,21 @@ export function favoritesToToon(favs: SavedDeal[]): string {
     const coupon = f.voucherCode || "-";
     const title = f.title.replace(/\|/g, "/").trim();
     lines.push(`${f.id}|${f.price}|${f.temperature}°|${f.merchant}|${coupon}|${f.savedAt}|${title}|${f.url}`);
+  }
+  return lines.join("\n");
+}
+
+export function commentsToToon(comments: CommentItem[], threadId: string): string {
+  const lines: string[] = [`[COMENTARIOS]: id=${threadId} count=${comments.length}`];
+  for (const c of comments) {
+    const user = c.user?.username || "Anónimo";
+    const date = c.createdAt || "";
+    const cleanText = (c.content || "")
+      .replace(/<[^>]+>/g, " ")
+      .replace(/\|/g, "/")
+      .replace(/\s+/g, " ")
+      .trim();
+    lines.push(`${c.commentId}|${user}|${date}|${cleanText}`);
   }
   return lines.join("\n");
 }

@@ -41,6 +41,15 @@ export interface SearchResultItem {
   isExpired: boolean;
 }
 
+export interface CommentItem {
+  commentId: string;
+  content: string;
+  createdAt?: string;
+  user?: {
+    username: string;
+  } | null;
+}
+
 export interface HotOptions {
   limit?: number;
   minTemp?: number;
